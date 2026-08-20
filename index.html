@@ -7,28 +7,22 @@
         * { box-sizing: border-box; }
         body { background-color: #0d1117; color: #e6edf3; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* الهيدر والديزاين القديم الأنيق */
         header { background: #161b22; border: 1px solid #30363d; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         h1 { margin: 0; color: #58a6ff; font-size: 24px; font-weight: bold; }
         
         .btn-add { background-color: #da3633; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; }
         .btn-add:hover { background-color: #b62324; }
 
-        /* شبكة الأفلام */
         .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
         .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; text-align: center; padding-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s; }
         .card:hover { transform: translateY(-4px); border-color: #8b949e; }
         .card img { width: 100%; height: 240px; object-fit: cover; border-bottom: 1px solid #30363d; }
         .card h3 { margin: 12px 10px; font-size: 16px; color: #e6edf3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* أزرار المشاهدة والتحميل */
-        .card-buttons { display: flex; gap: 8px; padding: 0 12px; }
-        .btn-watch { background-color: #1f6feb; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; font-size: 14px; }
-        .btn-watch:hover { background-color: #388bfd; }
-        .btn-download { background-color: #238636; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; font-size: 14px; text-decoration: none; display: inline-block; }
+        .card-buttons { padding: 0 12px; }
+        .btn-download { background-color: #238636; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; text-decoration: none; display: inline-block; }
         .btn-download:hover { background-color: #2ea043; }
 
-        /* النوافذ المنبثقة (Modals) */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1,4,9,0.85); justify-content: center; align-items: center; z-index: 1000; }
         .modal.active { display: flex; }
         .modal-content { background: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
@@ -42,11 +36,9 @@
         .btn-close { background-color: #484f58; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
         .btn-close:hover { background-color: #6e7681; }
 
-        /* لوحة التحكم للأدمن */
         .admin-list { max-height: 300px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #30363d; padding-top: 15px; }
         .admin-item { display: flex; justify-content: space-between; align-items: center; background: #0d1117; padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #30363d; }
         
-        /* أيقونة العين للباسورد */
         .pass-box { position: relative; width: 100%; }
         .pass-box span { position: absolute; left: 12px; top: 16px; cursor: pointer; font-size: 16px; }
     </style>
@@ -59,16 +51,6 @@
 </header>
 
 <div id="moviesGrid" class="movies-grid"></div>
-
-<!-- نافذة المشاهدة الفورية -->
-<div id="watchModal" class="modal">
-    <div class="modal-content" style="max-width: 800px; height: 80vh; display: flex; flex-direction: column; padding: 15px;">
-        <iframe id="videoFrame" width="100%" height="100%" style="flex-grow: 1; border:none; border-radius: 8px;" allowfullscreen></iframe>
-        <div style="text-align: left; margin-top: 10px;">
-            <button class="btn-close" style="flex: none; padding: 6px 20px;" onclick="closeModals()">إغلاق</button>
-        </div>
-    </div>
-</div>
 
 <!-- نافذة الباسورد مع أيقونة العين -->
 <div id="passwordModal" class="modal">
@@ -105,8 +87,8 @@
         <label style="font-size: 13px; color: #8b949e;">اسم الفيلم / Movie Name</label>
         <input type="text" id="mName" placeholder="مثال: سبونج بوب">
         
-        <label style="font-size: 13px; color: #8b949e;">رابط الفيلم المباشر / Video URL</label>
-        <input type="text" id="mUrl" placeholder="رابط درايف أو رابط مباشر">
+        <label style="font-size: 13px; color: #8b949e;">رابط التحميل المباشر / Download URL</label>
+        <input type="text" id="mUrl" placeholder="رابط الدرايف للتحميل">
         
         <label style="font-size: 13px; color: #8b949e;">رابط صورة الفيلم (اختياري) / Image URL</label>
         <input type="text" id="mImg" placeholder="رابط الصورة">
@@ -145,17 +127,11 @@
                     <img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/210x240?text=Error'">
                     <h3>${m.name}</h3>
                     <div class="card-buttons">
-                        <button class="btn-watch" onclick="watchMovie('${m.video}')">مشاهدة</button>
-                        <a href="${m.video}" target="_blank" class="btn-download">تحميل</a>
+                        <a href="${m.video}" target="_blank" class="btn-download">📥 تحميل الفيلم</a>
                     </div>
                 </div>
             `;
         }
-    }
-
-    function watchMovie(url) {
-        document.getElementById('videoFrame').src = url;
-        document.getElementById('watchModal').classList.add('active');
     }
 
     function requestAdmin() {
@@ -169,7 +145,7 @@
     }
 
     function verifyPass() {
-        let pass = document.getElementById('adminPassInput').value;
+        let pass = document.getElementById('adminPassInput ->').value || document.getElementById('adminPassInput').value;
         if (pass === "hima2sina26") {
             closeModals();
             openAdminDashboard();
@@ -190,7 +166,7 @@
                 <div class="admin-item">
                     <span style="font-weight: bold;">${m.name}</span>
                     <div style="display: flex; gap: 6px;">
-                        <button class="btn-watch" style="padding: 5px 10px; font-size: 12px;" onclick="openFormModal('${key}')">تعديل</button>
+                        <button class="btn-save" style="padding: 5px 10px; font-size: 12px;" onclick="openFormModal('${key}')">تعديل</button>
                         <button class="btn-close" style="padding: 5px 10px; font-size: 12px; background: #da3633;" onclick="deleteMovie('${key}')">حذف</button>
                     </div>
                 </div>
@@ -224,10 +200,10 @@
     function saveMovie() {
         let name = document.getElementById('mName').value.trim();
         let video = document.getElementById('mUrl').value.trim();
-        let image = document.getElementById('mImg').value.trim();
+        let image = document.getElementById('mImg'].value || document.getElementById('mImg').value.trim();
 
         if (!name || !video) {
-            alert("الرجاء إدخال اسم الفيلم ورابط الفيديو على الأقل!");
+            alert("الرجاء إدخال اسم الفيلم ورابط التحميل على الأقل!");
             return;
         }
 
@@ -251,8 +227,11 @@
     }
 
     function closeModals() {
-        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        document.getElementById('videoFrame').src = '';
+        document.querySelectorAll('.modal').forEach(m => m.classList.net ? m.classList.remove('active') : m.classList.remove('active'));
+        // إزالة الكلاس active من كل المودالز
+        document.getElementById('passwordModal').classList.remove('active');
+        document.getElementById('adminDashboard').classList.remove('active');
+        document.getElementById('formModal').classList.remove('active');
     }
 
     fetchMovies();
