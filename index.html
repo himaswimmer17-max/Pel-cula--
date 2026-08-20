@@ -211,33 +211,9 @@
             border-radius: 8px;
             background: black;
         }
-
-        #loadingOverlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 1.2rem;
-            flex-direction: column;
-            gap: 15px;
-        }
     </style>
 </head>
 <body>
-
-    <!-- شاشة التحميل السريعة عند رفع الفيلم -->
-    <div id="loadingOverlay">
-        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #e11d48; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-        <span id="loadingText">جاري إضافة الفيلم، يرجى الانتظار...</span>
-    </div>
-
-    <style>
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
 
     <header>
         <div class="logo">
@@ -279,12 +255,12 @@
                     <input type="text" id="movieName" class="form-control" required placeholder="مثال: فيلم الأكشن">
                 </div>
                 <div class="form-group">
-                    <label>ملف الفيلم (Upload Video):</label>
-                    <input type="file" id="movieFile" class="form-control" accept="video/*" required>
+                    <label>رابط الفيلم المباشر (Video URL):</label>
+                    <input type="url" id="movieUrl" class="form-control" required placeholder="ضع رابط الفيديو هنا (MP4)">
                 </div>
                 <div class="form-group">
-                    <label>صورة الفيلم (اختياري):</label>
-                    <input type="file" id="movieImage" class="form-control" accept="image/*">
+                    <label>رابط صورة الفيلم (اختياري):</label>
+                    <input type="url" id="movieImage" class="form-control" placeholder="ضع رابط الصورة أو اتركها فارغة">
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" class="btn btn-danger" style="flex: 1; padding: 10px;">Submit (إضافة)</button>
@@ -345,52 +321,28 @@
         function saveMovie(event) {
             event.preventDefault();
             const name = document.getElementById('movieName').value.trim();
-            const videoInput = document.getElementById('movieFile');
-            const imageInput = document.getElementById('movieImage');
+            const videoUrl = document.getElementById('movieUrl').value.trim();
+            let imageUrl = document.getElementById('movieImage').value.trim();
 
-            if (!videoInput.files || !videoInput.files[0]) {
-                alert('الرجاء اختيار ملف الفيلم.');
-                return;
+            if (!imageUrl) {
+                imageUrl = "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500";
             }
 
-            // إظهار شاشة التحميل لمنع التهنيج ولإعطاء مؤشر للمستخدم
-            document.getElementById('loadingOverlay').style.display = 'flex';
-
-            const videoReader = new FileReader();
-            videoReader.onload = function(e) {
-                const videoUrl = e.target.result;
-
-                if (imageInput.files && imageInput.files[0]) {
-                    const imgReader = new FileReader();
-                    imgReader.onload = function(e2) {
-                        uploadToFirebase(name, videoUrl, e2.target.result);
-                    };
-                    imgReader.readAsDataURL(imageInput.files[0]);
-                } else {
-                    const defaultImg = "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500";
-                    uploadToFirebase(name, videoUrl, defaultImg);
-                }
-            };
-            videoReader.readAsDataURL(videoInput.files[0]);
-        }
-
-        function uploadToFirebase(name, videoUrl, imageUrl) {
             const movieData = { name: name, video: videoUrl, image: imageUrl };
+
             fetch(`${DB_URL}/movies.json`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(movieData)
             }).then(() => {
-                document.getElementById('loadingOverlay').style.display = 'none';
                 alert('تم إضافة الفيلم بنجاح!');
                 closeModal('adminModal');
                 document.getElementById('movieName').value = '';
-                document.getElementById('movieFile').value = '';
+                document.getElementById('movieUrl').value = '';
                 document.getElementById('movieImage').value = '';
                 fetchMovies();
             }).catch(() => {
-                document.getElementById('loadingOverlay').style.display = 'none';
-                alert('حدث خطأ أثناء رفع الفيلم.');
+                alert('حدث خطأ أثناء إضافة الفيلم.');
             });
         }
 
@@ -424,7 +376,7 @@
                             <div class="movie-title">${m.name}</div>
                             <div class="movie-actions">
                                 <button class="btn-primary" onclick="watchMovie('${key}')">مشاهدة</button>
-                                <a href="${m.video}" download="${m.name}.mp4" class="btn-success">تحميل</a>
+                                <a href="${m.video}" download="${m.name}.mp4" class="btn-success" target="_blank">تحميل</a>
                             </div>
                         </div>
                     </div>
