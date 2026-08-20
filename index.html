@@ -4,35 +4,51 @@
     <meta charset="UTF-8">
     <title>أفلامي - Películas</title>
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e293b; padding-bottom: 15px; margin-bottom: 25px; }
-        h1 { margin: 0; color: #38bdf8; font-size: 24px; }
-        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .card { background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align: center; padding-bottom: 15px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
-        .card h3 { margin: 10px 0; font-size: 18px; color: #f1f5f9; }
-        .btn-watch { background-color: #0284c7; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 4px; }
-        .btn-watch:hover { background-color: #0369a1; }
-        .btn-download { background-color: #16a34a; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 4px; text-decoration: none; display: inline-block; }
-        .btn-download:hover { background-color: #15803d; }
-        .btn-add { background-color: #dc2626; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        .btn-add:hover { background-color: b91c1c; }
+        * { box-sizing: border-box; }
+        body { background-color: #0d1117; color: #e6edf3; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         
-        /* Modal Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
+        /* الهيدر والديزاين القديم الأنيق */
+        header { background: #161b22; border: 1px solid #30363d; padding: 15px 25px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        h1 { margin: 0; color: #58a6ff; font-size: 24px; font-weight: bold; }
+        
+        .btn-add { background-color: #da3633; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; }
+        .btn-add:hover { background-color: #b62324; }
+
+        /* شبكة الأفلام */
+        .movies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; text-align: center; padding-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); border-color: #8b949e; }
+        .card img { width: 100%; height: 240px; object-fit: cover; border-bottom: 1px solid #30363d; }
+        .card h3 { margin: 12px 10px; font-size: 16px; color: #e6edf3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* أزرار المشاهدة والتحميل */
+        .card-buttons { display: flex; gap: 8px; padding: 0 12px; }
+        .btn-watch { background-color: #1f6feb; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; font-size: 14px; }
+        .btn-watch:hover { background-color: #388bfd; }
+        .btn-download { background-color: #238636; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; font-size: 14px; text-decoration: none; display: inline-block; }
+        .btn-download:hover { background-color: #2ea043; }
+
+        /* النوافذ المنبثقة (Modals) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1,4,9,0.85); justify-content: center; align-items: center; z-index: 1000; }
         .modal.active { display: flex; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .modal-content input { width: 100%; padding: 10px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; box-sizing: border-box; }
-        .modal-buttons { display: flex; justify-content: space-between; margin-top: 15px; }
-        .btn-save { background-color: #16a34a; color: white; padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; }
-        .btn-close { background-color: #64748b; color: white; padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; }
+        .modal-content { background: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .modal-content h3 { margin-top: 0; color: #58a6ff; text-align: center; margin-bottom: 20px; }
         
-        /* Admin Dashboard Container inside modal */
-        .admin-panel-list { max-height: 300px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #334155; padding-top: 10px; }
-        .admin-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px 12px; margin-bottom: 8px; border-radius: 6px; }
-        .pass-container { position: relative; width: 100%; }
-        .pass-container span { position: absolute; left: 10px; top: 18px; cursor: pointer; font-size: 14px; color: #38bdf8; }
+        .modal-content input { width: 100%; padding: 10px 12px; margin: 8px 0 18px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; font-size: 14px; }
+        .modal-content input:focus { outline: none; border-color: #58a6ff; }
+
+        .modal-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-save { background-color: #238636; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
+        .btn-close { background-color: #484f58; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; }
+        .btn-close:hover { background-color: #6e7681; }
+
+        /* لوحة التحكم للأدمن */
+        .admin-list { max-height: 300px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #30363d; padding-top: 15px; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; background: #0d1117; padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #30363d; }
+        
+        /* أيقونة العين للباسورد */
+        .pass-box { position: relative; width: 100%; }
+        .pass-box span { position: absolute; left: 12px; top: 16px; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -44,53 +60,60 @@
 
 <div id="moviesGrid" class="movies-grid"></div>
 
-<!-- Modal المشاهدة السريعة -->
+<!-- نافذة المشاهدة الفورية -->
 <div id="watchModal" class="modal">
-    <div class="modal-content" style="width: 90%; max-width: 800px; height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content" style="max-width: 800px; height: 80vh; display: flex; flex-direction: column; padding: 15px;">
         <iframe id="videoFrame" width="100%" height="100%" style="flex-grow: 1; border:none; border-radius: 8px;" allowfullscreen></iframe>
-        <button class="btn-close" style="margin-top: 10px; align-self: flex-end;" onclick="closeModals()">إغلاق / Close</button>
+        <div style="text-align: left; margin-top: 10px;">
+            <button class="btn-close" style="flex: none; padding: 6px 20px;" onclick="closeModals()">إغلاق</button>
+        </div>
     </div>
 </div>
 
-<!-- Modal كلمة المرور -->
+<!-- نافذة الباسورد مع أيقونة العين -->
 <div id="passwordModal" class="modal">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
         <h3>أدخل كلمة المرور / Password</h3>
-        <div class="pass-container">
-            <input type="password" id="adminPassInput" placeholder="Password">
-            <span onclick="togglePasswordVisibility()">👁️</span>
+        <div class="pass-box">
+            <input type="password" id="adminPassInput" placeholder="الباسورد...">
+            <span onclick="togglePass()">👁️</span>
         </div>
         <div class="modal-buttons">
-            <button class="btn-save" onclick="verifyPassword()">دخول / Enter</button>
+            <button class="btn-save" onclick="verifyPass()">دخول</button>
             <button class="btn-close" onclick="closeModals()">إلغاء</button>
         </div>
     </div>
 </div>
 
-<!-- لوحة تحكم الأدمن (تعديل وحذف وإضافة جديد) -->
-<div id="adminDashboardModal" class="modal">
-    <div class="modal-content">
-        <h3 id="dashTitle">لوحة التحكم والأفلام / Admin Dashboard</h3>
-        <button class="btn-save" style="width: 100%; margin-bottom: 10px;" onclick="openFormModal()">➕ إضافة فيلم جديد / Add New</button>
-        <div class="admin-panel-list" id="adminListContainer">
-            <!-- قائمة الأفلام للتعديل والحذف -->
-        </div>
+<!-- لوحة التحكم وتعديل وحذف الأفلام -->
+<div id="adminDashboard" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3>لوحة تحكم الأدمن / Admin Dashboard</h3>
+        <button class="btn-save" style="width: 100%; margin-bottom: 12px; padding: 10px;" onclick="openFormModal()">➕ إضافة فيلم جديد / Add New</button>
+        <div class="admin-list" id="adminListContainer"></div>
         <div style="text-align: left; margin-top: 15px;">
-            <button class="btn-close" onclick="closeModals()">إغلاق / Close</button>
+            <button class="btn-close" style="flex: none; padding: 6px 20px;" onclick="closeModals()">إغلاق</button>
         </div>
     </div>
 </div>
 
-<!-- Modal نموذج الإضافة أو التعديل الفردي -->
+<!-- نافذة إضافة أو تعديل فيلم -->
 <div id="formModal" class="modal">
     <div class="modal-content">
-        <h3 id="formTitle">إضافة / تعديل فيلم</h3>
-        <input type="text" id="mName" placeholder="اسم الفيلم / Movie Name">
-        <input type="text" id="mUrl" placeholder="رابط الفيلم المباشر / Video URL">
-        <input type="text" id="mImg" placeholder="رابط الصورة (اختياري) / Image URL">
+        <h3 id="formTitle">إضافة أو تعديل الفيلم</h3>
+        
+        <label style="font-size: 13px; color: #8b949e;">اسم الفيلم / Movie Name</label>
+        <input type="text" id="mName" placeholder="مثال: سبونج بوب">
+        
+        <label style="font-size: 13px; color: #8b949e;">رابط الفيلم المباشر / Video URL</label>
+        <input type="text" id="mUrl" placeholder="رابط درايف أو رابط مباشر">
+        
+        <label style="font-size: 13px; color: #8b949e;">رابط صورة الفيلم (اختياري) / Image URL</label>
+        <input type="text" id="mImg" placeholder="رابط الصورة">
+        
         <div class="modal-buttons">
-            <button class="btn-save" onclick="saveMovieData()">حفظ / Save</button>
-            <button class="btn-close" onclick="backToDashboard()">رجوع / Back</button>
+            <button class="btn-save" onclick="saveMovie()">حفظ / Submit</button>
+            <button class="btn-close" onclick="backToDashboard()">رجوع</button>
         </div>
     </div>
 </div>
@@ -111,17 +134,17 @@
         const grid = document.getElementById('moviesGrid');
         grid.innerHTML = '';
         if (Object.keys(movies).length === 0) {
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد أفلام مضافة حالياً / No movies available.</p>';
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #8b949e;">لا توجد أفلام مضافة حالياً</p>';
             return;
         }
         for (let key in movies) {
             let m = movies[key];
-            let imgSrc = m.image && m.image.trim() !== "" ? m.image : 'https://via.placeholder.com/220x250?text=No+Image';
+            let imgSrc = m.image && m.image.trim() !== "" ? m.image : 'https://via.placeholder.com/210x240?text=No+Image';
             grid.innerHTML += `
                 <div class="card">
-                    <img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/220x250?text=Error+Image'">
+                    <img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/210x240?text=Error'">
                     <h3>${m.name}</h3>
-                    <div>
+                    <div class="card-buttons">
                         <button class="btn-watch" onclick="watchMovie('${m.video}')">مشاهدة</button>
                         <a href="${m.video}" target="_blank" class="btn-download">تحميل</a>
                     </div>
@@ -140,52 +163,52 @@
         document.getElementById('passwordModal').classList.add('active');
     }
 
-    function togglePasswordVisibility() {
+    function togglePass() {
         let input = document.getElementById('adminPassInput');
         input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function verifyPassword() {
+    function verifyPass() {
         let pass = document.getElementById('adminPassInput').value;
         if (pass === "hima2sina26") {
             closeModals();
             openAdminDashboard();
         } else {
-            alert("كلمة المرور غير صحيحة! / Incorrect Password");
+            alert("كلمة المرور غير صحيحة!");
         }
     }
 
     function openAdminDashboard() {
-        const listContainer = document.getElementById('adminListContainer');
-        listContainer.innerHTML = '';
+        const container = document.getElementById('adminListContainer');
+        container.innerHTML = '';
         if (Object.keys(movies).length === 0) {
-            listContainer.innerHTML = '<p style="text-align:center; color:#94a3b8;">لا توجد أفلام للتعديل</p>';
+            container.innerHTML = '<p style="text-align:center; color:#8b949e;">لا توجد أفلام للتعديل</p>';
         }
         for (let key in movies) {
             let m = movies[key];
-            listContainer.innerHTML += `
+            container.innerHTML += `
                 <div class="admin-item">
-                    <span>${m.name}</span>
-                    <div>
-                        <button class="btn-watch" style="padding: 4px 10px; font-size: 12px;" onclick="openFormModal('${key}')">تعديل</button>
-                        <button class="btn-close" style="padding: 4px 10px; font-size: 12px; background: #dc2626;" onclick="deleteMovie('${key}')">حذف</button>
+                    <span style="font-weight: bold;">${m.name}</span>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-watch" style="padding: 5px 10px; font-size: 12px;" onclick="openFormModal('${key}')">تعديل</button>
+                        <button class="btn-close" style="padding: 5px 10px; font-size: 12px; background: #da3633;" onclick="deleteMovie('${key}')">حذف</button>
                     </div>
                 </div>
             `;
         }
-        document.getElementById('adminDashboardModal').classList.add('active');
+        document.getElementById('adminDashboard').classList.add('active');
     }
 
     function openFormModal(key = null) {
         editKey = key;
-        document.getElementById('adminDashboardModal').classList.remove('active');
+        document.getElementById('adminDashboard').classList.remove('active');
         if (key && movies[key]) {
-            document.getElementById('formTitle').innerText = "تعديل الفيلم / Edit Movie";
+            document.getElementById('formTitle').innerText = "تعديل الفيلم";
             document.getElementById('mName').value = movies[key].name;
             document.getElementById('mUrl').value = movies[key].video;
             document.getElementById('mImg').value = movies[key].image || '';
         } else {
-            document.getElementById('formTitle').innerText = "إضافة فيلم جديد / Add New Movie";
+            document.getElementById('formTitle').innerText = "إضافة فيلم جديد";
             document.getElementById('mName').value = '';
             document.getElementById('mUrl').value = '';
             document.getElementById('mImg').value = '';
@@ -198,7 +221,7 @@
         openAdminDashboard();
     }
 
-    function saveMovieData() {
+    function saveMovie() {
         let name = document.getElementById('mName').value.trim();
         let video = document.getElementById('mUrl').value.trim();
         let image = document.getElementById('mImg').value.trim();
@@ -212,20 +235,15 @@
         let method = editKey ? "PATCH" : "POST";
         let targetUrl = editKey ? `https://ms-store-26105-default-rtdb.firebaseio.com/movies/${editKey}.json` : DB_URL;
 
-        fetch(targetUrl, {
-            method: method,
-            body: JSON.stringify(data)
-        }).then(() => {
+        fetch(targetUrl, { method: method, body: JSON.stringify(data) }).then(() => {
             closeModals();
             fetchMovies();
         });
     }
 
     function deleteMovie(key) {
-        if (confirm("هل أنت متأكد من حذف هذا الفيلم؟ / Are you sure?")) {
-            fetch(`https://ms-store-26105-default-rtdb.firebaseio.com/movies/${key}.json`, {
-                method: "DELETE"
-            }).then(() => {
+        if (confirm("هل أنت متأكد من الحذف؟")) {
+            fetch(`https://ms-store-26105-default-rtdb.firebaseio.com/movies/${key}.json`, { method: "DELETE" }).then(() => {
                 openAdminDashboard();
                 fetchMovies();
             });
@@ -237,7 +255,6 @@
         document.getElementById('videoFrame').src = '';
     }
 
-    // تشغيل جلب البيانات أول ما الصفحة تفتح
     fetchMovies();
 </script>
 </body>
