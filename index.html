@@ -184,15 +184,60 @@
             outline: none;
         }
 
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            left: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #94a3b8;
+        }
+
         video {
             width: 100%;
             max-height: 70vh;
             border-radius: 8px;
             background: black;
         }
+
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 15px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- شاشة التحميل السريعة عند رفع الفيلم -->
+    <div id="loadingOverlay">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #e11d48; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
+        <span id="loadingText">جاري إضافة الفيلم، يرجى الانتظار...</span>
+    </div>
+
+    <style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 
     <header>
         <div class="logo">
@@ -208,13 +253,16 @@
         </div>
     </div>
 
-    <!-- نافذة إدخال كلمة المرور -->
+    <!-- نافذة إدخال كلمة المرور مع زر العين -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
             <span style="position: absolute; top: 12px; left: 15px; font-size: 1.5rem; cursor: pointer; color: #94a3b8;" onclick="closeModal('passwordModal')">&times;</span>
             <h3 style="margin-bottom: 15px; color: #f8fafc;">أدخل كلمة المرور أولاً</h3>
             <div class="form-group">
-                <input type="password" id="passInput" class="form-control" placeholder="كلمة المرور">
+                <div class="password-container">
+                    <input type="password" id="passInput" class="form-control" placeholder="كلمة المرور">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+                </div>
             </div>
             <button class="btn btn-danger" style="width: 100%; padding: 10px;" onclick="checkPassword()">Submit</button>
         </div>
@@ -268,6 +316,15 @@
             document.getElementById('passwordModal').classList.add('active');
         }
 
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('passInput');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+            } else {
+                passInput.type = 'password';
+            }
+        }
+
         function checkPassword() {
             const pass = document.getElementById('passInput').value.trim();
             if (pass === 'hima2sina26') {
@@ -296,6 +353,9 @@
                 return;
             }
 
+            // إظهار شاشة التحميل لمنع التهنيج ولإعطاء مؤشر للمستخدم
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
             const videoReader = new FileReader();
             videoReader.onload = function(e) {
                 const videoUrl = e.target.result;
@@ -321,6 +381,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(movieData)
             }).then(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
                 alert('تم إضافة الفيلم بنجاح!');
                 closeModal('adminModal');
                 document.getElementById('movieName').value = '';
@@ -328,6 +389,7 @@
                 document.getElementById('movieImage').value = '';
                 fetchMovies();
             }).catch(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
                 alert('حدث خطأ أثناء رفع الفيلم.');
             });
         }
